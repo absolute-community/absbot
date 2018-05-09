@@ -1,0 +1,2 @@
+# absbot
+Absolute discord bot
