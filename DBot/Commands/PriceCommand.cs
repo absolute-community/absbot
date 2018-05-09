@@ -25,6 +25,7 @@ namespace DBot.Commands
             using (System.Net.Http.HttpClient client = new System.Net.Http.HttpClient())
             {
                 var response = client.GetAsync(graviex_ticker);
+                response.Result.EnsureSuccessStatusCode();
                 JObject jsonResponse =  JObject.Parse(await response.Result.Content.ReadAsStringAsync());
                 JObject ticker = (JObject)jsonResponse["ticker"];
 

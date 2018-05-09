@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,8 +20,12 @@ namespace DBot
         public CommandsNextModule Commands { get; set; }        
 
         const string TOKEN = "NDMxMDE4MTE3ODAwNTI1ODI0.DaYrIg.CsQLf8vAB02i50vGAJObbebFD_c";
+        
         static void Main(string[] args)
         {
+
+            ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+
             var prog = new Program();
             prog.RunBotAsync().GetAwaiter().GetResult();
         }
@@ -33,7 +38,7 @@ namespace DBot
                 TokenType = TokenType.Bot,
 
                 AutoReconnect = true,
-                LogLevel = LogLevel.Info,
+                LogLevel = LogLevel.Debug,
                 UseInternalLogHandler = true
             };
 
@@ -86,7 +91,14 @@ namespace DBot
         {
             // let's log the details of the error that just 
             // occured in our client
-            e.Client.DebugLogger.LogMessage(LogLevel.Error, "DBot", $"Exception occured: {e.Exception.GetType()}: {e.Exception.Message}", DateTime.Now);
+            if(e.Exception is AggregateException)
+            {
+                AggregateException ae = (AggregateException)e.Exception;                
+                foreach(Exception ex in ae.InnerExceptions)
+                    e.Client.DebugLogger.LogMessage(LogLevel.Error, "DBot", $"Exception occured: {ex.GetType()}: {ex.Message}", DateTime.Now);
+            }
+            else
+             e.Client.DebugLogger.LogMessage(LogLevel.Error, "DBot", $"Exception occured: {e.Exception.GetType()}: {e.Exception.Message}", DateTime.Now);
 
             // since this method is not async, let's return
             // a completed task, so that no additional work
@@ -131,7 +143,18 @@ namespace DBot
         private async Task Commands_CommandErrored(CommandErrorEventArgs e)
         {
             // let's log the error details
-            e.Context.Client.DebugLogger.LogMessage(LogLevel.Error, "DBot", $"{e.Context.User.Username} tried executing '{e.Command?.QualifiedName ?? "<unknown command>"}' but it errored: {e.Exception.GetType()}: {e.Exception.Message ?? "<no message>"}", DateTime.Now);
+            if(e.Exception is AggregateException)
+            {
+                e.Context.Client.DebugLogger.LogMessage(LogLevel.Error, "DBot", $"{e.Context.User.Username} tried executing '{e.Command?.QualifiedName ?? "<unknown command>"}'", DateTime.Now);
+                AggregateException ae = (AggregateException)e.Exception;
+                foreach (Exception exception in ae.InnerExceptions)
+                {
+                    e.Context.Client.DebugLogger.LogMessage(LogLevel.Error, "DBot", $"Exception occured: {exception.GetType()}: {exception.Message}", DateTime.Now);
+                    e.Context.Client.DebugLogger.LogMessage(LogLevel.Debug, "DBot", $"Stack: {exception}", DateTime.Now);
+                }
+            }
+            else
+                e.Context.Client.DebugLogger.LogMessage(LogLevel.Error, "DBot", $"{e.Context.User.Username} tried executing '{e.Command?.QualifiedName ?? "<unknown command>"}' but it errored: {e.Exception.GetType()}: {e.Exception.Message ?? "<no message>"}", DateTime.Now);
 
             // let's check if the error is a result of lack
             // of required permissions
