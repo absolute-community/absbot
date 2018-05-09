@@ -1,0 +1,22 @@
+﻿[
+  {
+    "Name": "gos.cx",
+    "Url": "http://www.gos.cx",
+    "Command": "-o stratum+tcp://stratum.gos.cx:4502 -u <WALLET_ADDRESS> -p c=ABS"
+  },
+  {
+    "Name": "coin miners",
+    "Url": "https://pool.coin-miners.info/",
+    "Command": "-o stratum+tcp://stratum-eu.coin-miners.info:4533 -u <WALLET_ADDRESS> -p c=ABS"
+  },
+  {
+    "Name": "angry pool",
+    "Url": "https://angrypool.com/",
+    "Command": "-o stratum+tcp://angrypool.com:4533 -u <WALLET_ADDRESS> -p c=ABS"
+  },
+  {
+    "Name": "JKC pool",
+    "Url": "https://jkcpool.com/",
+    "Command": "-o stratum+tcp://jkcpool.com:4533 -u <WALLET_ADDRESS> -p c=ABS"
+  }
+]
