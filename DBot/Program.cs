@@ -19,7 +19,7 @@ namespace DBot
         public DiscordClient Client { get; set; }
         public CommandsNextModule Commands { get; set; }        
 
-        const string TOKEN = "NDMxMDE4MTE3ODAwNTI1ODI0.DaYrIg.CsQLf8vAB02i50vGAJObbebFD_c";
+        const string TOKEN = "token_here";
         
         static void Main(string[] args)
         {
