@@ -1,2 +1,2 @@
-# absbot
-Absolute discord bot
+# ABS
+Absolute Coin Discord Bot
