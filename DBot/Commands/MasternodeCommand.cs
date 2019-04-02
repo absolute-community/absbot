@@ -89,7 +89,7 @@ namespace DBot.Commands
                 {
                     Id = "node-status",
                     Method = "masternodelist",
-                    Parameters = new List<string>() { "full", ip }
+                    Parameters = new List<string>() { "info", ip }
 
                 };
                 try
@@ -99,20 +99,20 @@ namespace DBot.Commands
 
                     var json = JsonConvert.DeserializeObject<RPCResponse>(await response.Content.ReadAsStringAsync());
                     string line = ((JObject)json.Result).First.First.ToString();
-                    string[] values = line.Trim().Split(' ');
+                    string[] values = line.Split(' ').Where(lc=>lc.Trim().Length > 0).ToArray();
                     StringBuilder c = new StringBuilder("Status : ");
                     c.AppendLine(values[0]);
                     c.AppendFormat("Last seen : {0:MM/dd/yyy - HH\\:mm\\:ss}\r\n", values[3].FromUnixTime());
 
                     c.Append("Up time : ");
-                    if (!string.IsNullOrEmpty(values[5]))
-                        c.AppendLine(TimeSpan.FromSeconds(int.Parse(values[5])).ToString().Replace(".", "d "));
+                    if (!string.IsNullOrEmpty(values[4]))
+                        c.AppendLine(TimeSpan.FromSeconds(int.Parse(values[4])).ToString().Replace(".", "d "));
                     else
                         c.AppendLine("N/A");
 
-                    c.Append("Last paid time : ");
-                    if(!string.IsNullOrEmpty(values[6]))
-                        c.AppendFormat("{0:MM/dd/yyy - HH\\:mm\\:ss}", values[6].FromUnixTime());
+                    c.Append("Sentinel version : ");
+                    if(!string.IsNullOrEmpty(values[5]))
+                        c.AppendFormat("{0}", values[5]);
                     else
                         c.AppendLine("N/A");
 
